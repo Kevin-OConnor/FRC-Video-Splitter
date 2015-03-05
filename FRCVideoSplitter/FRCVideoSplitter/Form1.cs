@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace FRCVideoSplitter
 {
@@ -120,7 +121,7 @@ namespace FRCVideoSplitter
                     string startTime = row.ItemArray[1].ToString();
                     string videoName = row.ItemArray[0].ToString() + " - " + eventNameTextBox.Text + Path.GetExtension(sourceFile);
                     string destinationFile = Path.Combine(matchVideoDestinationPathTextBox.Text, videoName);
-                    string command = @"C:\ffmpeg.exe";
+                    string command = "ffmpeg.exe";
                     string args = "-ss " + startTime + " -i \"" + sourceFile + "\" -t " + matchLengthBox.Text + " -c:v copy -c:a copy \"" + destinationFile + "\"";
 
                     Console.WriteLine(args);
