@@ -298,7 +298,7 @@
             this.splitVideosButton.Enabled = false;
             this.splitVideosButton.Location = new System.Drawing.Point(12, 493);
             this.splitVideosButton.Name = "splitVideosButton";
-            this.splitVideosButton.Size = new System.Drawing.Size(792, 34);
+            this.splitVideosButton.Size = new System.Drawing.Size(744, 34);
             this.splitVideosButton.TabIndex = 2;
             this.splitVideosButton.Text = "SPLIT VIDEOS";
             this.splitVideosButton.UseVisualStyleBackColor = true;
