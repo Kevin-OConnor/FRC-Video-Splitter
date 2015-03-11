@@ -209,12 +209,19 @@ namespace FRCVideoSplitter
             string matchTitle;
             DateTime startTime;
             TimeSpan offset;
+            int lastQualMatchNumber = 0;
+            int playoffStartIndex = 0;
+
             for (int i = 0; i < matches.Count; i++)
             {                
                 if (matches[i].level == "Qualification")
                 {
                     matchTitle = "Q" + matches[i].matchNumber;
                     startTime = DateTime.Parse(matches[i].autoStartTime);
+                    if (Convert.ToInt32(matches[i].matchNumber) > lastQualMatchNumber)
+                    {
+                        lastQualMatchNumber = Convert.ToInt32(matches[i].matchNumber);
+                    }
                     if (Convert.ToInt32(matches[i].matchNumber) == 1)
                     {
                         offset = startTime - startTime;
@@ -223,6 +230,7 @@ namespace FRCVideoSplitter
                     {
                         offset = startTime - DateTime.Parse(matches.Find(x => (x.level == "Qualification") && (Convert.ToInt32(x.matchNumber) == Convert.ToInt32(matches[i].matchNumber) - 1)).autoStartTime);
                     }
+                    apiMatchTimeSpans.Add(new MatchTimeSpan(matchTitle, offset));
                 }
                 else
                 {
@@ -234,10 +242,12 @@ namespace FRCVideoSplitter
                         if (Convert.ToInt32(matches[i].matchNumber) == 1)
                         {
                             offset = startTime - startTime;
+                            playoffStartIndex = i;
                         }
                         else
                         {
                             offset = startTime - DateTime.Parse(matches.Find(x => (x.level == "Playoff") && (Convert.ToInt32(x.matchNumber) == matchNumber - 1)).autoStartTime);
+                            apiMatchTimeSpans.Add(new MatchTimeSpan(matchTitle, offset));
                         }
                     }
                     else if (matchNumber <= 14 && matchNumber >= 9)
@@ -246,6 +256,7 @@ namespace FRCVideoSplitter
                         matchTitle = "SF" + matchNumber.ToString();
                         startTime = DateTime.Parse(matches[i].autoStartTime);
                         offset = startTime - DateTime.Parse(matches.Find(x => (x.level == "Playoff") && (Convert.ToInt32(x.matchNumber) == matchNumber + 7)).autoStartTime);
+                        apiMatchTimeSpans.Add(new MatchTimeSpan(matchTitle, offset));
                     }
                     else
                     {
@@ -253,11 +264,16 @@ namespace FRCVideoSplitter
                         matchTitle = "F" + matchNumber.ToString();
                         startTime = DateTime.Parse(matches[i].autoStartTime);
                         offset = startTime - DateTime.Parse(matches.Find(x => (x.level == "Playoff") && (Convert.ToInt32(x.matchNumber) == matchNumber + 13 )).autoStartTime);
+                        apiMatchTimeSpans.Add(new MatchTimeSpan(matchTitle, offset));
                     }
                 }
                 //string offsetString = offset.ToString("HH:mm:ss");
-                apiMatchTimeSpans.Add(new MatchTimeSpan(matchTitle, offset));
+                
+                
             }
+            //add in the timespan between the last qual match and the first playoff match
+            DateTime quarterFinalStartTime = DateTime.Parse(matches[playoffStartIndex].autoStartTime);
+            apiMatchTimeSpans.Add(new MatchTimeSpan("QF1", quarterFinalStartTime - DateTime.Parse(matches.Find(x => (x.level == "Qualification") && (Convert.ToInt32(x.matchNumber) == lastQualMatchNumber)).autoStartTime)));
 
             return apiMatchTimeSpans;
         }
