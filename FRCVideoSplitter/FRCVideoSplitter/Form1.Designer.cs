@@ -38,6 +38,7 @@
             this.matchVideoLengthOverrideCheckBox = new System.Windows.Forms.CheckBox();
             this.elimMatchesCheckBox = new System.Windows.Forms.CheckBox();
             this.qualMatchesCheckBox = new System.Windows.Forms.CheckBox();
+            this.getTimestampsFromTbaButton = new System.Windows.Forms.Button();
             this.generateTimestampButton = new System.Windows.Forms.Button();
             this.matchVideoBrowseButton = new System.Windows.Forms.Button();
             this.sourceVideoBrowseButton = new System.Windows.Forms.Button();
@@ -46,19 +47,18 @@
             this.firstQualMatchLabel = new System.Windows.Forms.Label();
             this.elimHelperLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.yearLabel = new System.Windows.Forms.Label();
+            this.eventCodeLabel = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.elimsMatchNamesBox = new System.Windows.Forms.TextBox();
             this.matchVideoDestinationPathTextBox = new System.Windows.Forms.TextBox();
+            this.yearBox = new System.Windows.Forms.TextBox();
+            this.eventCodeBox = new System.Windows.Forms.TextBox();
             this.eventNameTextBox = new System.Windows.Forms.TextBox();
             this.sourceVideoPathTextBox = new System.Windows.Forms.TextBox();
             this.matchLengthBox = new System.Windows.Forms.TextBox();
             this.splitVideosButton = new System.Windows.Forms.Button();
-            this.eventCodeBox = new System.Windows.Forms.TextBox();
-            this.eventCodeLabel = new System.Windows.Forms.Label();
-            this.yearBox = new System.Windows.Forms.TextBox();
-            this.yearLabel = new System.Windows.Forms.Label();
-            this.getTimestampsFromTbaButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.timeStampsDataGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lastQualMatchNumberBox)).BeginInit();
@@ -119,7 +119,7 @@
             this.useTbaCheckBox.Name = "useTbaCheckBox";
             this.useTbaCheckBox.Size = new System.Drawing.Size(187, 17);
             this.useTbaCheckBox.TabIndex = 5;
-            this.useTbaCheckBox.Text = "Get timestamps from TBA?";
+            this.useTbaCheckBox.Text = "Get timestamps from FRC?";
             this.useTbaCheckBox.UseVisualStyleBackColor = true;
             this.useTbaCheckBox.CheckedChanged += new System.EventHandler(this.useTbaCheckBox_CheckedChanged);
             // 
@@ -171,6 +171,16 @@
             this.qualMatchesCheckBox.Text = "Qualification Matches";
             this.qualMatchesCheckBox.UseVisualStyleBackColor = true;
             this.qualMatchesCheckBox.CheckedChanged += new System.EventHandler(this.qualMatchesCheckBox_CheckedChanged);
+            // 
+            // getTimestampsFromTbaButton
+            // 
+            this.getTimestampsFromTbaButton.Location = new System.Drawing.Point(341, 193);
+            this.getTimestampsFromTbaButton.Name = "getTimestampsFromTbaButton";
+            this.getTimestampsFromTbaButton.Size = new System.Drawing.Size(74, 23);
+            this.getTimestampsFromTbaButton.TabIndex = 2;
+            this.getTimestampsFromTbaButton.Text = "Get";
+            this.getTimestampsFromTbaButton.UseVisualStyleBackColor = true;
+            this.getTimestampsFromTbaButton.Click += new System.EventHandler(this.getTimestampsFromTbaButton_Click);
             // 
             // generateTimestampButton
             // 
@@ -253,6 +263,26 @@
             this.label4.TabIndex = 1;
             this.label4.Text = "Match Video Destination";
             // 
+            // yearLabel
+            // 
+            this.yearLabel.AutoSize = true;
+            this.yearLabel.Enabled = false;
+            this.yearLabel.Location = new System.Drawing.Point(269, 139);
+            this.yearLabel.Name = "yearLabel";
+            this.yearLabel.Size = new System.Drawing.Size(29, 13);
+            this.yearLabel.TabIndex = 1;
+            this.yearLabel.Text = "Year";
+            // 
+            // eventCodeLabel
+            // 
+            this.eventCodeLabel.AutoSize = true;
+            this.eventCodeLabel.Enabled = false;
+            this.eventCodeLabel.Location = new System.Drawing.Point(269, 165);
+            this.eventCodeLabel.Name = "eventCodeLabel";
+            this.eventCodeLabel.Size = new System.Drawing.Size(63, 13);
+            this.eventCodeLabel.TabIndex = 1;
+            this.eventCodeLabel.Text = "Event Code";
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -291,6 +321,24 @@
             this.matchVideoDestinationPathTextBox.TabIndex = 0;
             this.matchVideoDestinationPathTextBox.Text = "Click Browse...";
             // 
+            // yearBox
+            // 
+            this.yearBox.Enabled = false;
+            this.yearBox.Location = new System.Drawing.Point(341, 135);
+            this.yearBox.Name = "yearBox";
+            this.yearBox.Size = new System.Drawing.Size(74, 20);
+            this.yearBox.TabIndex = 0;
+            this.yearBox.TextChanged += new System.EventHandler(this.eventNameTextBox_TextChanged);
+            // 
+            // eventCodeBox
+            // 
+            this.eventCodeBox.Enabled = false;
+            this.eventCodeBox.Location = new System.Drawing.Point(341, 161);
+            this.eventCodeBox.Name = "eventCodeBox";
+            this.eventCodeBox.Size = new System.Drawing.Size(74, 20);
+            this.eventCodeBox.TabIndex = 0;
+            this.eventCodeBox.TextChanged += new System.EventHandler(this.eventNameTextBox_TextChanged);
+            // 
             // eventNameTextBox
             // 
             this.eventNameTextBox.Location = new System.Drawing.Point(77, 19);
@@ -326,54 +374,6 @@
             this.splitVideosButton.Text = "SPLIT VIDEOS";
             this.splitVideosButton.UseVisualStyleBackColor = true;
             this.splitVideosButton.Click += new System.EventHandler(this.splitVideosButton_Click);
-            // 
-            // eventCodeBox
-            // 
-            this.eventCodeBox.Enabled = false;
-            this.eventCodeBox.Location = new System.Drawing.Point(341, 161);
-            this.eventCodeBox.Name = "eventCodeBox";
-            this.eventCodeBox.Size = new System.Drawing.Size(74, 20);
-            this.eventCodeBox.TabIndex = 0;
-            this.eventCodeBox.TextChanged += new System.EventHandler(this.eventNameTextBox_TextChanged);
-            // 
-            // eventCodeLabel
-            // 
-            this.eventCodeLabel.AutoSize = true;
-            this.eventCodeLabel.Enabled = false;
-            this.eventCodeLabel.Location = new System.Drawing.Point(269, 165);
-            this.eventCodeLabel.Name = "eventCodeLabel";
-            this.eventCodeLabel.Size = new System.Drawing.Size(63, 13);
-            this.eventCodeLabel.TabIndex = 1;
-            this.eventCodeLabel.Text = "Event Code";
-            // 
-            // yearBox
-            // 
-            this.yearBox.Enabled = false;
-            this.yearBox.Location = new System.Drawing.Point(341, 135);
-            this.yearBox.Name = "yearBox";
-            this.yearBox.Size = new System.Drawing.Size(74, 20);
-            this.yearBox.TabIndex = 0;
-            this.yearBox.TextChanged += new System.EventHandler(this.eventNameTextBox_TextChanged);
-            // 
-            // yearLabel
-            // 
-            this.yearLabel.AutoSize = true;
-            this.yearLabel.Enabled = false;
-            this.yearLabel.Location = new System.Drawing.Point(269, 139);
-            this.yearLabel.Name = "yearLabel";
-            this.yearLabel.Size = new System.Drawing.Size(29, 13);
-            this.yearLabel.TabIndex = 1;
-            this.yearLabel.Text = "Year";
-            // 
-            // getTimestampsFromTbaButton
-            // 
-            this.getTimestampsFromTbaButton.Location = new System.Drawing.Point(341, 193);
-            this.getTimestampsFromTbaButton.Name = "getTimestampsFromTbaButton";
-            this.getTimestampsFromTbaButton.Size = new System.Drawing.Size(74, 23);
-            this.getTimestampsFromTbaButton.TabIndex = 2;
-            this.getTimestampsFromTbaButton.Text = "Get";
-            this.getTimestampsFromTbaButton.UseVisualStyleBackColor = true;
-            this.getTimestampsFromTbaButton.Click += new System.EventHandler(this.getTimestampsFromTbaButton_Click);
             // 
             // Form1
             // 
