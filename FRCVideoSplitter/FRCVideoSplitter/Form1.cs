@@ -18,6 +18,7 @@ namespace FRCVideoSplitter
         DataTable dt = new DataTable();
         FrcApi api = new FrcApi();
        
+        ProgressDialog progress;
 
         public Form1()
         {
@@ -127,8 +128,13 @@ namespace FRCVideoSplitter
             if (!errors.Any())
             {
                 string sourceFile = sourceVideoPathTextBox.Text;
+                progress = new ProgressDialog();
+                progress.SetText("Splitting video");
+                progress.Chunks = dt.Rows.Count;
+                progress.Show();
                 foreach (DataRow row in dt.Rows)
-                {                    
+                {
+                    progress.SetText("Splitting video " + (completed + 1) + " of " + dt.Rows.Count);
                     string startTime = row.ItemArray[1].ToString();
                     string videoName = row.ItemArray[0].ToString() + " - " + eventNameTextBox.Text + Path.GetExtension(sourceFile);
                     string destinationFile = Path.Combine(matchVideoDestinationPathTextBox.Text, videoName);
@@ -147,7 +153,9 @@ namespace FRCVideoSplitter
                     process.WaitForExit();
                     string output = process.StandardOutput.ReadToEnd();
                     Console.WriteLine(output);
+                    progress.SetCompletedChunks(++completed);
                 }
+                progress.Close();
             }
             else
             {
@@ -179,6 +187,9 @@ namespace FRCVideoSplitter
 
         private void getTimestampsFromTbaButton_Click(object sender, EventArgs e)
         {
+            progress = new ProgressDialog();
+            progress.SetText("Fetching data and calculating timestamps");
+            progress.Show();
             List<FrcApi.MatchResult> matchResults = api.getMatchResults(Convert.ToInt32(yearBox.Text), eventCodeBox.Text);
 
             DateTime firstMatchTimeStamp;
@@ -201,6 +212,7 @@ namespace FRCVideoSplitter
                 }
             }
             timeStampsDataGridView.DataSource = dt;
+            progress.Close();
         }
 
         class MatchTimeSpan
