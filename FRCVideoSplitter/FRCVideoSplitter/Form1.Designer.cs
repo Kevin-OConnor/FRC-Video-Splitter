@@ -39,6 +39,7 @@
             this.elimMatchesCheckBox = new System.Windows.Forms.CheckBox();
             this.qualMatchesCheckBox = new System.Windows.Forms.CheckBox();
             this.getTimestampsFromTbaButton = new System.Windows.Forms.Button();
+            this.uploadVideosButton = new System.Windows.Forms.Button();
             this.generateTimestampButton = new System.Windows.Forms.Button();
             this.matchVideoBrowseButton = new System.Windows.Forms.Button();
             this.sourceVideoBrowseButton = new System.Windows.Forms.Button();
@@ -59,6 +60,10 @@
             this.sourceVideoPathTextBox = new System.Windows.Forms.TextBox();
             this.matchLengthBox = new System.Windows.Forms.TextBox();
             this.splitVideosButton = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.useExistingPlaylist = new System.Windows.Forms.CheckBox();
+            this.playlistLabel = new System.Windows.Forms.Label();
+            this.playlistIDBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.timeStampsDataGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lastQualMatchNumberBox)).BeginInit();
@@ -80,6 +85,9 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.playlistLabel);
+            this.groupBox1.Controls.Add(this.playlistIDBox);
+            this.groupBox1.Controls.Add(this.useExistingPlaylist);
             this.groupBox1.Controls.Add(this.useTbaCheckBox);
             this.groupBox1.Controls.Add(this.lastQualMatchNumberBox);
             this.groupBox1.Controls.Add(this.firstQualMatchNumberBox);
@@ -87,6 +95,7 @@
             this.groupBox1.Controls.Add(this.elimMatchesCheckBox);
             this.groupBox1.Controls.Add(this.qualMatchesCheckBox);
             this.groupBox1.Controls.Add(this.getTimestampsFromTbaButton);
+            this.groupBox1.Controls.Add(this.uploadVideosButton);
             this.groupBox1.Controls.Add(this.generateTimestampButton);
             this.groupBox1.Controls.Add(this.matchVideoBrowseButton);
             this.groupBox1.Controls.Add(this.sourceVideoBrowseButton);
@@ -119,7 +128,7 @@
             this.useTbaCheckBox.Name = "useTbaCheckBox";
             this.useTbaCheckBox.Size = new System.Drawing.Size(187, 17);
             this.useTbaCheckBox.TabIndex = 5;
-            this.useTbaCheckBox.Text = "Get timestamps from FRC?";
+            this.useTbaCheckBox.Text = "Use TBA Data?";
             this.useTbaCheckBox.UseVisualStyleBackColor = true;
             this.useTbaCheckBox.CheckedChanged += new System.EventHandler(this.useTbaCheckBox_CheckedChanged);
             // 
@@ -182,9 +191,19 @@
             this.getTimestampsFromTbaButton.UseVisualStyleBackColor = true;
             this.getTimestampsFromTbaButton.Click += new System.EventHandler(this.getTimestampsFromTbaButton_Click);
             // 
+            // uploadVideosButton
+            // 
+            this.uploadVideosButton.Location = new System.Drawing.Point(249, 435);
+            this.uploadVideosButton.Name = "uploadVideosButton";
+            this.uploadVideosButton.Size = new System.Drawing.Size(225, 23);
+            this.uploadVideosButton.TabIndex = 2;
+            this.uploadVideosButton.Text = "Upload Match Videos";
+            this.uploadVideosButton.UseVisualStyleBackColor = true;
+            this.uploadVideosButton.Click += new System.EventHandler(this.uploadVideosButton_Click);
+            // 
             // generateTimestampButton
             // 
-            this.generateTimestampButton.Location = new System.Drawing.Point(126, 435);
+            this.generateTimestampButton.Location = new System.Drawing.Point(10, 435);
             this.generateTimestampButton.Name = "generateTimestampButton";
             this.generateTimestampButton.Size = new System.Drawing.Size(225, 23);
             this.generateTimestampButton.TabIndex = 2;
@@ -375,6 +394,40 @@
             this.splitVideosButton.UseVisualStyleBackColor = true;
             this.splitVideosButton.Click += new System.EventHandler(this.splitVideosButton_Click);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // useExistingPlaylist
+            // 
+            this.useExistingPlaylist.Location = new System.Drawing.Point(252, 222);
+            this.useExistingPlaylist.Name = "useExistingPlaylist";
+            this.useExistingPlaylist.Size = new System.Drawing.Size(187, 17);
+            this.useExistingPlaylist.TabIndex = 6;
+            this.useExistingPlaylist.Text = "Use Existing Playlist?";
+            this.useExistingPlaylist.UseVisualStyleBackColor = true;
+            this.useExistingPlaylist.CheckedChanged += new System.EventHandler(this.useExistingPlaylist_CheckedChanged);
+            // 
+            // playlistLabel
+            // 
+            this.playlistLabel.AutoSize = true;
+            this.playlistLabel.Enabled = false;
+            this.playlistLabel.Location = new System.Drawing.Point(269, 249);
+            this.playlistLabel.Name = "playlistLabel";
+            this.playlistLabel.Size = new System.Drawing.Size(53, 13);
+            this.playlistLabel.TabIndex = 8;
+            this.playlistLabel.Text = "Playlist ID";
+            // 
+            // playlistIDBox
+            // 
+            this.playlistIDBox.Enabled = false;
+            this.playlistIDBox.Location = new System.Drawing.Point(341, 245);
+            this.playlistIDBox.Name = "playlistIDBox";
+            this.playlistIDBox.Size = new System.Drawing.Size(116, 20);
+            this.playlistIDBox.TabIndex = 7;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -428,6 +481,11 @@
         private System.Windows.Forms.Label yearLabel;
         private System.Windows.Forms.TextBox yearBox;
         private System.Windows.Forms.Button getTimestampsFromTbaButton;
+        private System.Windows.Forms.Button uploadVideosButton;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.CheckBox useExistingPlaylist;
+        private System.Windows.Forms.Label playlistLabel;
+        private System.Windows.Forms.TextBox playlistIDBox;
     }
 }
 

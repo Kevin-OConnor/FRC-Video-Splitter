@@ -17,8 +17,18 @@ namespace FRCVideoSplitter
     {
         DataTable dt = new DataTable();
         FrcApi api = new FrcApi();
-       
         ProgressDialog progress;
+        VideoUploader uploader = new VideoUploader();
+        String playlist;
+        List<VideoDetails> vidQueue;
+
+        public class VideoDetails
+        {
+            public String eventCode;
+            public String matchType;
+            public String matchNumber;
+            public String youtubeKey;
+        }
 
         public Form1()
         {
@@ -102,6 +112,36 @@ namespace FRCVideoSplitter
             timeStampsDataGridView.DataSource = dt;
 
             splitVideosButton.Enabled = true;
+        }
+
+        private async void uploadVideosButton_Click(object sender, EventArgs e)
+        {
+            if(matchVideoDestinationPathTextBox.Text.Equals("Click Browse..."))
+            {
+                MessageBox.Show("Error: Please specify video destination folder");
+                return;
+            }
+            if (!useTbaCheckBox.Checked)
+            {
+                if (MessageBox.Show("Use TBA not checked, proceed with upload with minimal description?", "Proceed?", MessageBoxButtons.YesNo) == DialogResult.No)
+                    return;
+            }
+            int retVal = await uploader.SetCredentials();
+            if (backgroundWorker1.IsBusy != true)
+            {
+                progress = new ProgressDialog();
+                progress.Canceled += new EventHandler<EventArgs>(cancelAsyncButton_Click);
+                progress.Show();
+                backgroundWorker1.RunWorkerAsync();
+            }
+        }
+
+        private void cancelAsyncButton_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker1.WorkerSupportsCancellation == true)
+            {
+                backgroundWorker1.CancelAsync();
+            }
         }
 
         private void splitVideosButton_Click(object sender, EventArgs e)
@@ -229,6 +269,14 @@ namespace FRCVideoSplitter
             }
         }
 
+        private void AddToSpreadsheet(VideoDetails details)
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(matchVideoDestinationPathTextBox.Text + "\\" + eventNameTextBox.Text + ".csv", true))
+            {
+                file.WriteLine("2015," + details.eventCode + "," + details.matchType + "," + details.matchNumber + ",https://www.youtube.com/watch?v=" + details.youtubeKey);
+            }
+        }
+
         private List<MatchTimeSpan> getMatchTimespans(List<FrcApi.MatchResult> matches)
         {
             List<MatchTimeSpan> apiMatchTimeSpans = new List<MatchTimeSpan>();
@@ -304,6 +352,155 @@ namespace FRCVideoSplitter
             apiMatchTimeSpans.Add(new MatchTimeSpan("QF1", quarterFinalStartTime - DateTime.Parse(matches.Find(x => (x.level == "Qualification") && (Convert.ToInt32(x.matchNumber) == lastQualMatchNumber)).autoStartTime)));
 
             return apiMatchTimeSpans;
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            vidQueue = new List<VideoDetails>();
+            List<FrcApi.MatchResult> matchResults = new List<FrcApi.MatchResult>();
+            int chunks = 0;
+
+            char[] delimiters = {'-'};
+
+            uploader.Upload_ProgressChanged += new EventHandler<long>(vid_ProgressChanged);
+            if (useTbaCheckBox.Checked)
+            {
+                try
+                {
+                    matchResults = api.getMatchResults(Convert.ToInt32(yearBox.Text), eventCodeBox.Text);
+                }
+                catch (Exception ex)
+                {
+                    if (MessageBox.Show("Error getting TBA data, proceed with minimal description?", "Proceed?", MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        worker.CancelAsync();
+                    }
+                }
+            }
+            string[] videoFiles = Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mov");
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpeg4"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpeg"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mp4"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.avi"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.wmv"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpegps"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.swf"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.flv"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.3gpp"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.webm"));
+            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mkv"));
+            if (MessageBox.Show(videoFiles.Length + " Files found. This operation may take a long time. Click Yes to confirm", "Proceed?", MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                worker.CancelAsync();
+            }
+            else
+            {
+                progress.Chunks = videoFiles.Length;
+                uploader.UploadCompleted += new EventHandler<string>(vid_UploadCompleted);
+                uploader.Upload_Failed += new EventHandler<string>(vid_UploadFailed);
+                if (!useExistingPlaylist.Checked)
+                {
+                    playlist = uploader.CreatePlaylist(eventNameTextBox.Text);
+                }
+                else
+                {
+                    playlist = playlistIDBox.Text;
+                }
+            }
+            foreach (string videoFile in videoFiles)
+            {
+                if (worker.CancellationPending == true)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+                else
+                {
+                    string level;
+                    Int32 matchNumber;
+                    string matchDescription = Path.GetFileName(videoFile).Split(delimiters).FirstOrDefault().Trim();
+                    progress.SetText("Uploading file: " + Path.GetFileName(videoFile));
+                    progress.ChunkSize = (new FileInfo(videoFile)).Length;
+                    VideoDetails vidDetail = new VideoDetails();
+                    if (matchDescription.Contains("Q") && !matchDescription.Contains("QF"))
+                    {
+                        vidDetail.matchType = "q";
+                        vidDetail.matchNumber = matchDescription.Substring(1);
+                        level = "Qualification";
+                        matchNumber = Convert.ToInt32(matchDescription.Substring(1));
+                    }
+                    else
+                    {
+                        level = "Playoff";
+                        if (matchDescription.Contains("QF"))
+                        {
+                            vidDetail.matchType = "qf1";
+                            vidDetail.matchNumber = matchDescription.Substring(2);
+                            matchNumber = Convert.ToInt32(matchDescription.Substring(2));
+                        }
+                        else if (matchDescription.Contains("SF"))
+                        {
+                            vidDetail.matchType = "sf1";
+                            vidDetail.matchNumber = matchDescription.Substring(2);
+                            matchNumber = Convert.ToInt32(matchDescription.Substring(2)) + 8;
+                        }
+                        else
+                        {
+                            vidDetail.matchType = "f1";
+                            vidDetail.matchNumber = matchDescription.Substring(1);
+                            matchNumber = Convert.ToInt32(matchDescription.Substring(1)) + 14;
+                        }
+                    }
+                    FrcApi.MatchResult result = matchResults.Find(x => (x.level == level) && (Convert.ToInt32(x.matchNumber) == matchNumber));
+                    string youtubeTitle = eventNameTextBox.Text + " " + matchDescription + Environment.NewLine;
+                    string youtubeDescription = youtubeTitle;
+                    try
+                    {
+                        youtubeDescription += "Red Alliance: " + result.teams.Find(x => x.station == "Red1").teamNumber + " " + result.teams.Find(x => x.station == "Red2").teamNumber + " " + result.teams.Find(x => x.station == "Red3").teamNumber + Environment.NewLine;
+                        youtubeDescription += "Blue Alliance: " + result.teams.Find(x => x.station == "Blue1").teamNumber + " " + result.teams.Find(x => x.station == "Blue2").teamNumber + " " + result.teams.Find(x => x.station == "Blue3").teamNumber + Environment.NewLine;
+                        youtubeDescription += "Final Score - Red Alliance: " + result.scoreRedFinal + "   Blue Alliance: " + result.scoreBlueFinal;
+                        vidDetail.eventCode = eventCodeBox.Text;
+                    }
+                    catch (Exception ex) { }
+                    vidQueue.Add(vidDetail);
+                    uploader.Upload(youtubeTitle, youtubeDescription, videoFile);
+                    progress.SetCompletedChunks(++chunks);
+                }
+            }
+        }
+
+        private void vid_ProgressChanged(object sender, long bytes)
+        {
+            progress.SetChunkProgress(bytes);
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progress.Close();
+        }
+
+        private void vid_UploadFailed(object sender, String error)
+        {
+            AddToSpreadsheet(vidQueue.FirstOrDefault());
+            vidQueue.RemoveAt(0);
+        }
+
+        private void vid_UploadCompleted(object sender, string id)
+        {
+            if (playlist != null)
+            {
+                uploader.AddToPlaylist(playlist, id);
+            }
+            vidQueue.FirstOrDefault().youtubeKey = id;
+            AddToSpreadsheet(vidQueue.FirstOrDefault());
+            vidQueue.RemoveAt(0);
+        }
+
+        private void useExistingPlaylist_CheckedChanged(object sender, EventArgs e)
+        {
+            playlistIDBox.Enabled = useExistingPlaylist.Checked;
+            playlistLabel.Enabled = useExistingPlaylist.Checked;
         }
     }
 }
