@@ -107,6 +107,14 @@ namespace FRCVideoSplitter
         {
             DateTime timeValue;
             List<string> errors = new List<string>();
+            int completed = 0;
+
+            if (!Directory.Exists(matchVideoDestinationPathTextBox.Text))
+            {
+                MessageBox.Show("Error: Destination not specified or invalid");
+                return;
+            }
+
             foreach (DataRow row in dt.Rows)
             {
                 string timestamp = row.ItemArray[1].ToString();
@@ -148,7 +156,7 @@ namespace FRCVideoSplitter
                 {
                     sb.Append(s + ", ");
                 }
-                MessageBox.Show("Timestampe errors detected at: " + sb.ToString());
+                MessageBox.Show("Timestamp errors detected at: " + sb.ToString());
             }
         }
 
@@ -181,8 +189,16 @@ namespace FRCVideoSplitter
             for (int i = 1; i < dt.Rows.Count; i++)
             {                
                 DateTime previousTime = DateTime.Parse(dt.Rows[i - 1][1].ToString());
-                DateTime currentTime = previousTime.Add(timeSpans.Find(x => x.matchName == dt.Rows[i][0].ToString()).timeSpan);
-                dt.Rows[i][1] = currentTime.ToString("HH:mm:ss.fff");                    
+
+                try
+                {
+                    DateTime currentTime = previousTime.Add(timeSpans.Find(x => x.matchName == dt.Rows[i][0].ToString()).timeSpan);
+                    dt.Rows[i][1] = currentTime.ToString("HH:mm:ss.fff");   
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Error calculating time for match " + dt.Rows[i][0]);
+                }
             }
             timeStampsDataGridView.DataSource = dt;
         }
