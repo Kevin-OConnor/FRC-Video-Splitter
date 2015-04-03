@@ -379,17 +379,17 @@ namespace FRCVideoSplitter
                 }
             }
             string[] videoFiles = Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mov");
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpeg4"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpeg"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mp4"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.avi"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.wmv"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpegps"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.swf"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.flv"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.3gpp"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.webm"));
-            videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mkv"));
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpeg4")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpeg")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mp4")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.avi")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.wmv")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mpegps")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.swf")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.flv")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.3gpp")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.webm")).ToArray();
+            videoFiles = videoFiles.Concat(Directory.GetFiles(matchVideoDestinationPathTextBox.Text, "*.mkv")).ToArray();
             if (MessageBox.Show(videoFiles.Length + " Files found. This operation may take a long time. Click Yes to confirm", "Proceed?", MessageBoxButtons.YesNo) == DialogResult.No)
             {
                 worker.CancelAsync();
