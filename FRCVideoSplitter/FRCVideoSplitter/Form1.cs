@@ -223,6 +223,9 @@ namespace FRCVideoSplitter
         private void Form1_Load(object sender, EventArgs e)
         {
             yearBox.Text = DateTime.Now.Year.ToString();
+            uploader.Upload_ProgressChanged += new EventHandler<long>(vid_ProgressChanged);
+            uploader.UploadCompleted += new EventHandler<string>(vid_UploadCompleted);
+            uploader.Upload_Failed += new EventHandler<string>(vid_UploadFailed);
         }
 
         private void getTimestampsFromTbaButton_Click(object sender, EventArgs e)
@@ -362,7 +365,6 @@ namespace FRCVideoSplitter
 
             char[] delimiters = {'-'};
 
-            uploader.Upload_ProgressChanged += new EventHandler<long>(vid_ProgressChanged);
             if (useTbaCheckBox.Checked)
             {
                 try
@@ -396,8 +398,7 @@ namespace FRCVideoSplitter
             else
             {
                 progress.Chunks = videoFiles.Length;
-                uploader.UploadCompleted += new EventHandler<string>(vid_UploadCompleted);
-                uploader.Upload_Failed += new EventHandler<string>(vid_UploadFailed);
+
                 if (!useExistingPlaylist.Checked)
                 {
                     playlist = uploader.CreatePlaylist(eventNameTextBox.Text);
