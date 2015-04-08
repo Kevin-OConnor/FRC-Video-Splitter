@@ -239,10 +239,9 @@ namespace FRCVideoSplitter
 
             for (int i = 1; i < dt.Rows.Count; i++)
             {                
-                DateTime previousTime = DateTime.Parse(dt.Rows[i - 1][1].ToString());
-
                 try
                 {
+                    DateTime previousTime = DateTime.Parse(dt.Rows[i - 1][1].ToString());
                     DateTime currentTime = previousTime.Add(timeSpans.Find(x => x.matchName == dt.Rows[i][0].ToString()).timeSpan);
                     dt.Rows[i][1] = currentTime.ToString("HH:mm:ss.fff");   
                 }
