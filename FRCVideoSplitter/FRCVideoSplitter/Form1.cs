@@ -273,9 +273,21 @@ namespace FRCVideoSplitter
 
         private void AddToSpreadsheet(VideoDetails details)
         {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(matchVideoDestinationPathTextBox.Text + "\\" + eventNameTextBox.Text + ".csv", true))
+            DialogResult result = DialogResult.Retry;
+            while (result == DialogResult.Retry)
             {
-                file.WriteLine("2015," + details.eventCode + "," + details.matchType + "," + details.matchNumber + ",https://www.youtube.com/watch?v=" + details.youtubeKey);
+                try
+                {
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(matchVideoDestinationPathTextBox.Text + "\\" + eventNameTextBox.Text + ".csv", true))
+                    {
+                        file.WriteLine("2015," + details.eventCode + "," + details.matchType + "," + details.matchNumber + ",https://www.youtube.com/watch?v=" + details.youtubeKey);
+                        result = DialogResult.OK;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result = MessageBox.Show("Error writing to spreadsheet file. Please make sure the file is not open in another program, then click Retry.", "Spreadsheet Write Error", MessageBoxButtons.RetryCancel);
+                }
             }
         }
 
