@@ -417,13 +417,19 @@ namespace FRCVideoSplitter
                 }
                 else
                 {
-                    string level;
-                    Int32 matchNumber;
+                    string level = "Qualification";
+                    Int32 matchNumber = 0;
                     string matchDescription = Path.GetFileName(videoFile).Split(delimiters).FirstOrDefault().Trim();
                     progress.SetText("Uploading file: " + Path.GetFileName(videoFile));
                     progress.ChunkSize = (new FileInfo(videoFile)).Length;
                     VideoDetails vidDetail = new VideoDetails();
-                    if (matchDescription.Contains("Q") && !matchDescription.Contains("QF"))
+
+                    if (matchDescription.Length > 5)
+                    {
+                        vidDetail.matchType = "Awards";
+                        vidDetail.matchNumber = "0";
+                    }
+                    else if (matchDescription.Contains("Q") && !matchDescription.Contains("QF"))
                     {
                         vidDetail.matchType = "q";
                         vidDetail.matchNumber = matchDescription.Substring(1);
@@ -452,11 +458,12 @@ namespace FRCVideoSplitter
                             matchNumber = Convert.ToInt32(matchDescription.Substring(1)) + 14;
                         }
                     }
-                    FrcApi.MatchResult result = matchResults.Find(x => (x.level == level) && (Convert.ToInt32(x.matchNumber) == matchNumber));
+                    
                     string youtubeTitle = eventNameTextBox.Text + " " + matchDescription + Environment.NewLine;
                     string youtubeDescription = youtubeTitle;
                     try
                     {
+                        FrcApi.MatchResult result = matchResults.Find(x => (x.level == level) && (Convert.ToInt32(x.matchNumber) == matchNumber));
                         youtubeDescription += "Red Alliance: " + result.teams.Find(x => x.station == "Red1").teamNumber + " " + result.teams.Find(x => x.station == "Red2").teamNumber + " " + result.teams.Find(x => x.station == "Red3").teamNumber + Environment.NewLine;
                         youtubeDescription += "Blue Alliance: " + result.teams.Find(x => x.station == "Blue1").teamNumber + " " + result.teams.Find(x => x.station == "Blue2").teamNumber + " " + result.teams.Find(x => x.station == "Blue3").teamNumber + Environment.NewLine;
                         youtubeDescription += "Final Score - Red Alliance: " + result.scoreRedFinal + "   Blue Alliance: " + result.scoreBlueFinal;
