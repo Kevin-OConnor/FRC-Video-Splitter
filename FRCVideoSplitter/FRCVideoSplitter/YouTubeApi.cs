@@ -19,16 +19,18 @@ namespace FRCVideoSplitter
 
         public async Task<int> SetCredentials()
         {
-            using (var stream = new FileStream("client_secrets.json", FileMode.Open, FileAccess.Read))
-            {
-                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    new[] { YouTubeService.Scope.Youtube },
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(Assembly.GetExecutingAssembly().GetName().Name)
-                );
-            }
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "FRCVideoSplitter.client_secrets.json";
+                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                        GoogleClientSecrets.Load(stream).Secrets,
+                        new[] { YouTubeService.Scope.Youtube },
+                        "user",
+                        CancellationToken.None,
+                        new FileDataStore(Assembly.GetExecutingAssembly().GetName().Name)
+                    );
+                }
             return 0;
         }
 

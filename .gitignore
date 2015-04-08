@@ -230,3 +230,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 FRCVideoSplitter/FRCVideoSplitter/packages/
+FRCVideoSplitter/FRCVideoSplitter/client_secrets.json

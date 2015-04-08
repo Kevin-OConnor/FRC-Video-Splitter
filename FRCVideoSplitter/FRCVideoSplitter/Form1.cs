@@ -126,7 +126,16 @@ namespace FRCVideoSplitter
                 if (MessageBox.Show("Use TBA not checked, proceed with upload with minimal description?", "Proceed?", MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
             }
-            int retVal = await uploader.SetCredentials();
+            try
+            {
+                int retVal = await uploader.SetCredentials();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error setting Youtube credentials. If running/building from source, make sure to get and embed a client_secrets.json file for the Google Developers API. Otherwise "
+                    + "make sure that you have a working internet connection and that this application is allowed through your firewall.");
+                return;
+            }
             if (backgroundWorker1.IsBusy != true)
             {
                 progress = new ProgressDialog();
@@ -273,9 +282,21 @@ namespace FRCVideoSplitter
 
         private void AddToSpreadsheet(VideoDetails details)
         {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(matchVideoDestinationPathTextBox.Text + "\\" + eventNameTextBox.Text + ".csv", true))
+            DialogResult result = DialogResult.Retry;
+            while (result == DialogResult.Retry)
             {
-                file.WriteLine("2015," + details.eventCode + "," + details.matchType + "," + details.matchNumber + ",https://www.youtube.com/watch?v=" + details.youtubeKey);
+                try
+                {
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(matchVideoDestinationPathTextBox.Text + "\\" + eventNameTextBox.Text + ".csv", true))
+                    {
+                        file.WriteLine("2015," + details.eventCode + "," + details.matchType + "," + details.matchNumber + ",https://www.youtube.com/watch?v=" + details.youtubeKey);
+                        result = DialogResult.OK;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result = MessageBox.Show("Error writing to spreadsheet file. Please make sure the file is not open in another program, then click Retry.", "Spreadsheet Write Error", MessageBoxButtons.RetryCancel);
+                }
             }
         }
 
