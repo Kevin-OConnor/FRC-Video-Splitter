@@ -7,6 +7,7 @@ To run using the source, open the Solution in Visual Studio. If you don't want t
 To run as an executable, double click on setup.exe. Click Install at the Dialog. This will install the program and then launch it. For subsequent runs you can launch the program by double clicking on FRCVideoSplitter.application or using the Start Menu shortcut that gets installed.
 
 Instructions for splitting video:
+
 1. Enter the title of the event. ("2015 Granite State District Event")
 
 2. Browse to the location of the large video file you want to split.
@@ -23,11 +24,9 @@ Instructions for splitting video:
 
 8. Enter time stamp information for the first video. This is the part I couldn't automate. You'll have to scrub through your video and enter the start time of the first match in the HH:MM:SS format.
 
-9-1. MANUAL: Continue scrubbing through the video and entering the start time for all additional matches.
-
+9. MANUAL: Continue scrubbing through the video and entering the start time for all additional matches.
 OR
-
-9-2. AUTO: Make sure you have a working internet connection, check the "Use TBA Data?" checkbox and enter the Event Code (a list of event codes can be found here: http://frclinks.com/) and click "Get"
+AUTO: Make sure you have a working internet connection, check the "Use TBA Data?" checkbox and enter the Event Code (a list of event codes can be found here: http://frclinks.com/) and click "Get"
 
 10. Click "SPLIT VIDEOS" and sit back and watch the magic.
 
